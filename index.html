@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Phone</title>
+    <meta name="description" content="Live countdown to RecRoom shutdown">
+    <meta name="theme-color" content="#667eea">
+    <title>RecRoom Shutdown Countdown</title>
     <style>
         * {
             margin: 0;
@@ -11,27 +13,42 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f0f0f;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            overflow-x: auto;
         }
 
+        .container-wrapper {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            max-width: 1400px;
+        }
+
+        /* Phone Styles */
         .phone-frame {
             width: 390px;
             height: 844px;
             background: #000;
             border-radius: 60px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
             overflow: hidden;
             border: 12px solid #1a1a1a;
             position: relative;
             display: flex;
             flex-direction: column;
+            flex-shrink: 0;
         }
 
         .notch {
@@ -44,7 +61,7 @@
 
         .screen {
             flex: 1;
-            background: #f5f5f7;
+            background: #1a1a1a;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -52,13 +69,14 @@
         }
 
         .status-bar {
-            background: #f5f5f7;
+            background: #1a1a1a;
             padding: 8px 16px;
             font-size: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid #333;
+            color: #fff;
         }
 
         .status-left, .status-right {
@@ -94,7 +112,7 @@
             align-items: center;
             justify-content: center;
             font-size: 28px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
             transition: transform 0.2s;
         }
 
@@ -107,6 +125,7 @@
             text-align: center;
             width: 70px;
             word-break: break-word;
+            color: #fff;
         }
 
         .safari {
@@ -118,8 +137,9 @@
         }
 
         .camera {
-            background: #000;
+            background: #1a1a1a;
             color: #fff;
+            border: 2px solid #333;
         }
 
         .settings {
@@ -149,7 +169,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: #f5f5f7;
+            background: #1a1a1a;
             z-index: 50;
             display: none;
             flex-direction: column;
@@ -160,17 +180,18 @@
         }
 
         .modal-header {
-            background: #f5f5f7;
+            background: #1a1a1a;
             padding: 12px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid #333;
         }
 
         .modal-title {
             font-size: 16px;
             font-weight: 600;
+            color: #fff;
         }
 
         .back-btn, .close-btn {
@@ -179,22 +200,24 @@
             font-size: 16px;
             cursor: pointer;
             padding: 8px;
+            color: #667eea;
         }
 
         .modal-content {
             flex: 1;
             overflow-y: auto;
             padding: 16px;
+            color: #fff;
         }
 
-        /* Safari/Browser Styles */
         .browser-url {
-            background: #e0e0e0;
+            background: #333;
             padding: 8px 12px;
             margin: 8px;
             border-radius: 20px;
             font-size: 12px;
             font-family: monospace;
+            color: #aaa;
         }
 
         .browser-page {
@@ -206,13 +229,14 @@
         .browser-page h2 {
             margin-top: 16px;
             margin-bottom: 8px;
+            color: #fff;
         }
 
         .browser-page p {
             margin-bottom: 12px;
+            color: #aaa;
         }
 
-        /* Messages Styles */
         .message-list {
             display: flex;
             flex-direction: column;
@@ -221,12 +245,12 @@
 
         .message-item {
             padding: 12px;
-            background: #e5e5ea;
+            background: #333;
             border-radius: 12px;
             font-size: 13px;
+            color: #fff;
         }
 
-        /* Calculator Styles */
         .calc-display {
             background: #000;
             color: #fff;
@@ -256,12 +280,13 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            background: #e0e0e0;
+            background: #333;
+            color: #fff;
             transition: background 0.2s;
         }
 
         .calc-btn:active {
-            background: #d0d0d0;
+            background: #444;
         }
 
         .calc-btn.operator {
@@ -283,7 +308,6 @@
             background: #2fa74f;
         }
 
-        /* Settings Styles */
         .settings-list {
             display: flex;
             flex-direction: column;
@@ -291,17 +315,18 @@
 
         .settings-item {
             padding: 16px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid #333;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 14px;
+            color: #fff;
         }
 
         .toggle {
             width: 50px;
             height: 30px;
-            background: #ccc;
+            background: #444;
             border-radius: 15px;
             cursor: pointer;
             position: relative;
@@ -333,240 +358,465 @@
             background: #000;
         }
 
+        /* Countdown Styles */
+        .countdown-container {
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .countdown-content {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 60px 40px;
+            max-width: 600px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .countdown-display {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 40px 0;
+        }
+
+        .time-unit {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .time-unit:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.05);
+        }
+
+        .number {
+            font-size: 3.5em;
+            font-weight: 900;
+            color: #00ff88;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+        }
+
+        .label {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.1em;
+            margin-top: 12px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 600;
+        }
+
+        .status {
+            font-size: 1.8em;
+            color: #fff;
+            margin: 40px 0 20px;
+            min-height: 40px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .status.countdown {
+            color: rgba(0, 255, 136, 0.9);
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+        }
+
+        .status.ended {
+            color: #ff6b6b;
+            font-weight: bold;
+            animation: pulse 1s infinite;
+            text-shadow: 0 0 15px rgba(255, 107, 107, 0.6);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .info {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95em;
+            margin-top: 30px;
+            line-height: 1.6;
+        }
+
+        .info-item {
+            margin: 10px 0;
+        }
+
+        .emoji {
+            font-size: 1.3em;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 1200px) {
+            .container-wrapper {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .countdown-content {
+                max-width: 100%;
+            }
+        }
+
         @media (max-width: 600px) {
             .phone-frame {
                 width: 100%;
-                height: auto;
-                aspect-ratio: 390 / 844;
+                max-width: 390px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .countdown-content {
+                padding: 40px 25px;
+            }
+
+            .number {
+                font-size: 2.5em;
+            }
+
+            .countdown-display {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
 </head>
 <body>
-    <div class="phone-frame">
-        <div class="notch"></div>
-        
-        <div class="screen">
-            <div class="status-bar">
-                <div class="status-left">
-                    <span id="time">9:41</span>
-                </div>
-                <div class="status-right">
-                    📶 🔋
-                </div>
-            </div>
+    <div class="stars" id="stars"></div>
 
-            <!-- Home Screen -->
-            <div id="home-screen" class="app-grid">
-                <div class="app-icon" onclick="openApp('safari')">
-                    <div class="app-icon-square safari">🌐</div>
-                    <div class="app-label">Safari</div>
-                </div>
-
-                <div class="app-icon" onclick="openApp('messages')">
-                    <div class="app-icon-square messages">💬</div>
-                    <div class="app-label">Messages</div>
-                </div>
-
-                <div class="app-icon" onclick="openApp('camera')">
-                    <div class="app-icon-square camera">📷</div>
-                    <div class="app-label">Camera</div>
-                </div>
-
-                <div class="app-icon" onclick="openApp('settings')">
-                    <div class="app-icon-square settings">⚙️</div>
-                    <div class="app-label">Settings</div>
-                </div>
-
-                <div class="app-icon" onclick="openApp('calculator')">
-                    <div class="app-icon-square calculator">🧮</div>
-                    <div class="app-label">Calculator</div>
-                </div>
-
-                <div class="app-icon" onclick="openApp('clock')">
-                    <div class="app-icon-square clock">🕒</div>
-                    <div class="app-label">Clock</div>
-                </div>
-
-                <div class="app-icon" onclick="openApp('music')">
-                    <div class="app-icon-square music">🎵</div>
-                    <div class="app-label">Music</div>
-                </div>
-
-                <div class="app-icon" onclick="openApp('photos')">
-                    <div class="app-icon-square photos">📸</div>
-                    <div class="app-label">Photos</div>
-                </div>
-            </div>
-
-            <!-- Safari -->
-            <div id="safari-modal" class="modal">
-                <div class="modal-header">
-                    <button class="back-btn" onclick="closeApp()">← Back</button>
-                    <div class="modal-title">Safari</div>
-                    <div style="width: 40px;"></div>
-                </div>
-                <div class="browser-url">google.com</div>
-                <div class="browser-page">
-                    <h2>Welcome to Safari</h2>
-                    <p>This is a simulated phone browser. You can browse the web and visit different websites.</p>
-                    <h2>Quick Links</h2>
-                    <p>🔗 Google - Search engine</p>
-                    <p>🔗 GitHub - Code repository</p>
-                    <p>🔗 Wikipedia - Knowledge base</p>
-                    <p style="margin-top: 20px; font-size: 12px; color: #666;">This is a demo phone interface. The browser is simulated for interactive purposes.</p>
-                </div>
-            </div>
-
-            <!-- Messages -->
-            <div id="messages-modal" class="modal">
-                <div class="modal-header">
-                    <button class="back-btn" onclick="closeApp()">← Back</button>
-                    <div class="modal-title">Messages</div>
-                    <div style="width: 40px;"></div>
-                </div>
-                <div class="modal-content">
-                    <div class="message-list">
-                        <div class="message-item">👋 Hey! How are you?</div>
-                        <div class="message-item">This is a demo phone. Try out the different apps!</div>
-                        <div class="message-item">Open Calculator to do math</div>
-                        <div class="message-item">Check Settings to toggle options</div>
+    <div class="container-wrapper">
+        <!-- Phone -->
+        <div class="phone-frame">
+            <div class="notch"></div>
+            
+            <div class="screen">
+                <div class="status-bar">
+                    <div class="status-left">
+                        <span id="time">9:41</span>
+                    </div>
+                    <div class="status-right">
+                        📶 🔋
                     </div>
                 </div>
-            </div>
 
-            <!-- Camera -->
-            <div id="camera-modal" class="modal">
-                <div class="modal-header">
-                    <button class="back-btn" onclick="closeApp()">← Back</button>
-                    <div class="modal-title">Camera</div>
-                    <div style="width: 40px;"></div>
-                </div>
-                <div class="modal-content" style="background: #000; display: flex; align-items: center; justify-content: center;">
-                    <div style="color: #fff; font-size: 64px;">📷</div>
-                </div>
-            </div>
+                <!-- Home Screen -->
+                <div id="home-screen" class="app-grid">
+                    <div class="app-icon" onclick="openApp('safari')">
+                        <div class="app-icon-square safari">🌐</div>
+                        <div class="app-label">Safari</div>
+                    </div>
 
-            <!-- Settings -->
-            <div id="settings-modal" class="modal">
-                <div class="modal-header">
-                    <button class="back-btn" onclick="closeApp()">← Back</button>
-                    <div class="modal-title">Settings</div>
-                    <div style="width: 40px;"></div>
+                    <div class="app-icon" onclick="openApp('messages')">
+                        <div class="app-icon-square messages">💬</div>
+                        <div class="app-label">Messages</div>
+                    </div>
+
+                    <div class="app-icon" onclick="openApp('camera')">
+                        <div class="app-icon-square camera">📷</div>
+                        <div class="app-label">Camera</div>
+                    </div>
+
+                    <div class="app-icon" onclick="openApp('settings')">
+                        <div class="app-icon-square settings">⚙️</div>
+                        <div class="app-label">Settings</div>
+                    </div>
+
+                    <div class="app-icon" onclick="openApp('calculator')">
+                        <div class="app-icon-square calculator">🧮</div>
+                        <div class="app-label">Calculator</div>
+                    </div>
+
+                    <div class="app-icon" onclick="openApp('clock')">
+                        <div class="app-icon-square clock">🕒</div>
+                        <div class="app-label">Clock</div>
+                    </div>
+
+                    <div class="app-icon" onclick="openApp('music')">
+                        <div class="app-icon-square music">🎵</div>
+                        <div class="app-label">Music</div>
+                    </div>
+
+                    <div class="app-icon" onclick="openApp('photos')">
+                        <div class="app-icon-square photos">📸</div>
+                        <div class="app-label">Photos</div>
+                    </div>
                 </div>
-                <div class="modal-content">
-                    <div class="settings-list">
-                        <div class="settings-item">
-                            <span>WiFi</span>
-                            <div class="toggle on" onclick="toggleSetting(this)"></div>
-                        </div>
-                        <div class="settings-item">
-                            <span>Bluetooth</span>
-                            <div class="toggle" onclick="toggleSetting(this)"></div>
-                        </div>
-                        <div class="settings-item">
-                            <span>Airplane Mode</span>
-                            <div class="toggle" onclick="toggleSetting(this)"></div>
-                        </div>
-                        <div class="settings-item">
-                            <span>Do Not Disturb</span>
-                            <div class="toggle" onclick="toggleSetting(this)"></div>
+
+                <!-- Safari -->
+                <div id="safari-modal" class="modal">
+                    <div class="modal-header">
+                        <button class="back-btn" onclick="closeApp()">← Back</button>
+                        <div class="modal-title">Safari</div>
+                        <div style="width: 40px;"></div>
+                    </div>
+                    <div class="browser-url">google.com</div>
+                    <div class="browser-page">
+                        <h2>Welcome to Safari</h2>
+                        <p>This is a simulated phone browser.</p>
+                        <h2>Quick Links</h2>
+                        <p>🔗 Google - Search engine</p>
+                        <p>🔗 GitHub - Code repository</p>
+                    </div>
+                </div>
+
+                <!-- Messages -->
+                <div id="messages-modal" class="modal">
+                    <div class="modal-header">
+                        <button class="back-btn" onclick="closeApp()">← Back</button>
+                        <div class="modal-title">Messages</div>
+                        <div style="width: 40px;"></div>
+                    </div>
+                    <div class="modal-content">
+                        <div class="message-list">
+                            <div class="message-item">👋 Hey! How are you?</div>
+                            <div class="message-item">This is a demo phone. Try out the different apps!</div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Calculator -->
-            <div id="calculator-modal" class="modal">
-                <div class="modal-header">
-                    <button class="back-btn" onclick="closeApp()">← Back</button>
-                    <div class="modal-title">Calculator</div>
-                    <div style="width: 40px;"></div>
+                <!-- Camera -->
+                <div id="camera-modal" class="modal">
+                    <div class="modal-header">
+                        <button class="back-btn" onclick="closeApp()">← Back</button>
+                        <div class="modal-title">Camera</div>
+                        <div style="width: 40px;"></div>
+                    </div>
+                    <div class="modal-content" style="background: #000; display: flex; align-items: center; justify-content: center;">
+                        <div style="color: #fff; font-size: 64px;">📷</div>
+                    </div>
                 </div>
-                <div class="modal-content">
-                    <div class="calc-display" id="calc-display">0</div>
-                    <div class="calc-grid">
-                        <button class="calc-btn" onclick="calcClear()">AC</button>
-                        <button class="calc-btn operator" onclick="calcOperation('/'">÷</button>
-                        <button class="calc-btn operator" onclick="calcOperation('*')">×</button>
-                        <button class="calc-btn operator" onclick="calcBackspace()">⌫</button>
 
-                        <button class="calc-btn" onclick="calcNumber('7')">7</button>
-                        <button class="calc-btn" onclick="calcNumber('8')">8</button>
-                        <button class="calc-btn" onclick="calcNumber('9')">9</button>
-                        <button class="calc-btn operator" onclick="calcOperation('-')">−</button>
+                <!-- Settings -->
+                <div id="settings-modal" class="modal">
+                    <div class="modal-header">
+                        <button class="back-btn" onclick="closeApp()">← Back</button>
+                        <div class="modal-title">Settings</div>
+                        <div style="width: 40px;"></div>
+                    </div>
+                    <div class="modal-content">
+                        <div class="settings-list">
+                            <div class="settings-item">
+                                <span>WiFi</span>
+                                <div class="toggle on" onclick="toggleSetting(this)"></div>
+                            </div>
+                            <div class="settings-item">
+                                <span>Bluetooth</span>
+                                <div class="toggle" onclick="toggleSetting(this)"></div>
+                            </div>
+                            <div class="settings-item">
+                                <span>Airplane Mode</span>
+                                <div class="toggle" onclick="toggleSetting(this)"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                        <button class="calc-btn" onclick="calcNumber('4')">4</button>
-                        <button class="calc-btn" onclick="calcNumber('5')">5</button>
-                        <button class="calc-btn" onclick="calcNumber('6')">6</button>
-                        <button class="calc-btn operator" onclick="calcOperation('+')">+</button>
+                <!-- Calculator -->
+                <div id="calculator-modal" class="modal">
+                    <div class="modal-header">
+                        <button class="back-btn" onclick="closeApp()">← Back</button>
+                        <div class="modal-title">Calculator</div>
+                        <div style="width: 40px;"></div>
+                    </div>
+                    <div class="modal-content">
+                        <div class="calc-display" id="calc-display">0</div>
+                        <div class="calc-grid">
+                            <button class="calc-btn" onclick="calcClear()">AC</button>
+                            <button class="calc-btn operator" onclick="calcOperation('/')">÷</button>
+                            <button class="calc-btn operator" onclick="calcOperation('*')">×</button>
+                            <button class="calc-btn operator" onclick="calcBackspace()">⌫</button>
 
-                        <button class="calc-btn" onclick="calcNumber('1')">1</button>
-                        <button class="calc-btn" onclick="calcNumber('2')">2</button>
-                        <button class="calc-btn" onclick="calcNumber('3')">3</button>
-                        <button class="calc-btn operator" onclick="calcDecimal()">.</button>
+                            <button class="calc-btn" onclick="calcNumber('7')">7</button>
+                            <button class="calc-btn" onclick="calcNumber('8')">8</button>
+                            <button class="calc-btn" onclick="calcNumber('9')">9</button>
+                            <button class="calc-btn operator" onclick="calcOperation('-')">−</button>
 
-                        <button class="calc-btn" onclick="calcNumber('0')" style="grid-column: span 2;">0</button>
-                        <button class="calc-btn equals" onclick="calcEquals()">=</button>
+                            <button class="calc-btn" onclick="calcNumber('4')">4</button>
+                            <button class="calc-btn" onclick="calcNumber('5')">5</button>
+                            <button class="calc-btn" onclick="calcNumber('6')">6</button>
+                            <button class="calc-btn operator" onclick="calcOperation('+')">+</button>
+
+                            <button class="calc-btn" onclick="calcNumber('1')">1</button>
+                            <button class="calc-btn" onclick="calcNumber('2')">2</button>
+                            <button class="calc-btn" onclick="calcNumber('3')">3</button>
+                            <button class="calc-btn operator" onclick="calcDecimal()">.</button>
+
+                            <button class="calc-btn" onclick="calcNumber('0')" style="grid-column: span 2;">0</button>
+                            <button class="calc-btn equals" onclick="calcEquals()">=</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clock -->
+                <div id="clock-modal" class="modal">
+                    <div class="modal-header">
+                        <button class="back-btn" onclick="closeApp()">← Back</button>
+                        <div class="modal-title">Clock</div>
+                        <div style="width: 40px;"></div>
+                    </div>
+                    <div class="modal-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <div style="font-size: 80px; font-weight: 300;" id="clock-display">12:00</div>
+                    </div>
+                </div>
+
+                <!-- Music -->
+                <div id="music-modal" class="modal">
+                    <div class="modal-header">
+                        <button class="back-btn" onclick="closeApp()">← Back</button>
+                        <div class="modal-title">Music</div>
+                        <div style="width: 40px;"></div>
+                    </div>
+                    <div class="modal-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;">
+                        <div style="font-size: 100px;">🎵</div>
+                        <div style="text-align: center;">
+                            <p style="font-weight: 600;">No Music Playing</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Photos -->
+                <div id="photos-modal" class="modal">
+                    <div class="modal-header">
+                        <button class="back-btn" onclick="closeApp()">← Back</button>
+                        <div class="modal-title">Photos</div>
+                        <div style="width: 40px;"></div>
+                    </div>
+                    <div class="modal-content" style="display: flex; align-items: center; justify-content: center; background: #333;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 80px; margin-bottom: 10px;">📸</div>
+                            <p>No Photos Yet</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Clock -->
-            <div id="clock-modal" class="modal">
-                <div class="modal-header">
-                    <button class="back-btn" onclick="closeApp()">← Back</button>
-                    <div class="modal-title">Clock</div>
-                    <div style="width: 40px;"></div>
-                </div>
-                <div class="modal-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <div style="font-size: 80px; font-weight: 300;" id="clock-display">12:00</div>
-                    <div style="font-size: 18px; color: #666; margin-top: 10px;">AM</div>
-                </div>
-            </div>
+            <div class="home-indicator"></div>
+        </div>
 
-            <!-- Music -->
-            <div id="music-modal" class="modal">
-                <div class="modal-header">
-                    <button class="back-btn" onclick="closeApp()">← Back</button>
-                    <div class="modal-title">Music</div>
-                    <div style="width: 40px;"></div>
-                </div>
-                <div class="modal-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;">
-                    <div style="font-size: 100px;">🎵</div>
-                    <div style="text-align: center;">
-                        <p style="font-weight: 600;">No Music Playing</p>
-                        <p style="color: #666; font-size: 13px;">Play your favorite songs</p>
+        <!-- Countdown -->
+        <div class="countdown-container">
+            <div class="countdown-content">
+                <h1>🎮 RecRoom Shutdown 🎮</h1>
+                <div class="subtitle">Time Until Closure</div>
+                
+                <div class="countdown-display">
+                    <div class="time-unit">
+                        <div class="number" id="days">0</div>
+                        <div class="label">Days</div>
                     </div>
-                    <div style="display: flex; gap: 20px; margin-top: 20px;">
-                        <button class="calc-btn" style="width: 50px; padding: 10px;">⏮</button>
-                        <button class="calc-btn" style="width: 50px; padding: 10px;">▶️</button>
-                        <button class="calc-btn" style="width: 50px; padding: 10px;">⏭</button>
+                    <div class="time-unit">
+                        <div class="number" id="hours">0</div>
+                        <div class="label">Hours</div>
+                    </div>
+                    <div class="time-unit">
+                        <div class="number" id="minutes">0</div>
+                        <div class="label">Minutes</div>
+                    </div>
+                    <div class="time-unit">
+                        <div class="number" id="seconds">0</div>
+                        <div class="label">Seconds</div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Photos -->
-            <div id="photos-modal" class="modal">
-                <div class="modal-header">
-                    <button class="back-btn" onclick="closeApp()">← Back</button>
-                    <div class="modal-title">Photos</div>
-                    <div style="width: 40px;"></div>
-                </div>
-                <div class="modal-content" style="display: flex; align-items: center; justify-content: center; background: #e0e0e0;">
-                    <div style="text-align: center;">
-                        <div style="font-size: 80px; margin-bottom: 10px;">📸</div>
-                        <p>No Photos Yet</p>
-                        <p style="color: #666; font-size: 13px;">Use Camera to take photos</p>
+                <div class="status countdown" id="status"></div>
+                
+                <div class="info">
+                    <div class="info-item">
+                        <span class="emoji">⏱️</span>
+                        <span id="date-display">Loading...</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="emoji">🌍</span>
+                        <span>UTC Timezone</span>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="home-indicator"></div>
     </div>
 
     <script>
+        // Create starfield background
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
         // Update time
         function updateTime() {
             const now = new Date();
@@ -576,8 +826,57 @@
             document.getElementById('clock-display').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
         }
 
-        updateTime();
-        setInterval(updateTime, 1000);
+        // Countdown
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZoneName: 'short'
+            };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        const shutdownDate = new Date('2026-06-01 00:00:00 UTC').getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const difference = shutdownDate - now;
+
+            const daysEl = document.getElementById('days');
+            const hoursEl = document.getElementById('hours');
+            const minutesEl = document.getElementById('minutes');
+            const secondsEl = document.getElementById('seconds');
+            const statusEl = document.getElementById('status');
+
+            if (difference > 0) {
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+                daysEl.textContent = String(days).padStart(2, '0');
+                hoursEl.textContent = String(hours).padStart(2, '0');
+                minutesEl.textContent = String(minutes).padStart(2, '0');
+                secondsEl.textContent = String(seconds).padStart(2, '0');
+
+                statusEl.textContent = '⏱️ Counting down...';
+                statusEl.className = 'status countdown';
+            } else {
+                daysEl.textContent = '00';
+                hoursEl.textContent = '00';
+                minutesEl.textContent = '00';
+                secondsEl.textContent = '00';
+
+                statusEl.textContent = '💀 RecRoom has been shut down!';
+                statusEl.className = 'status ended';
+            }
+        }
 
         // App functions
         function openApp(appName) {
@@ -663,6 +962,15 @@
                 updateCalcDisplay();
             }
         }
+
+        // Initialize
+        createStars();
+        updateTime();
+        updateCountdown();
+        document.getElementById('date-display').textContent = formatDate(shutdownDate);
+        
+        setInterval(updateTime, 1000);
+        setInterval(updateCountdown, 1000);
     </script>
 </body>
 </html>
