@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Live countdown to RecRoom shutdown">
+    <meta name="theme-color" content="#667eea">
     <title>RecRoom Shutdown Countdown</title>
     <style>
         * {
@@ -11,14 +13,44 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
         }
 
         .container {
@@ -26,17 +58,40 @@
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 50px;
-            max-width: 800px;
+            padding: 60px 40px;
+            max-width: 900px;
+            width: 100%;
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
             border: 1px solid rgba(255, 255, 255, 0.18);
+            animation: slideIn 0.8s ease-out;
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         h1 {
             color: #fff;
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            font-weight: 300;
         }
 
         .countdown-display {
@@ -47,39 +102,56 @@
         }
 
         .time-unit {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 30px 20px;
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .time-unit:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.05);
         }
 
         .number {
-            font-size: 3em;
-            font-weight: bold;
+            font-size: 3.5em;
+            font-weight: 900;
             color: #00ff88;
-            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
             font-family: 'Courier New', monospace;
-        }
-
-        .label {
-            color: #fff;
-            font-size: 1.2em;
-            margin-top: 10px;
-            text-transform: uppercase;
             letter-spacing: 2px;
         }
 
+        .label {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.1em;
+            margin-top: 12px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 600;
+        }
+
         .status {
-            font-size: 1.5em;
+            font-size: 1.8em;
             color: #fff;
-            margin: 20px 0;
-            min-height: 30px;
+            margin: 40px 0 20px;
+            min-height: 40px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .status.countdown {
+            color: rgba(0, 255, 136, 0.9);
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
         }
 
         .status.ended {
             color: #ff6b6b;
             font-weight: bold;
             animation: pulse 1s infinite;
+            text-shadow: 0 0 15px rgba(255, 107, 107, 0.6);
         }
 
         @keyframes pulse {
@@ -87,40 +159,113 @@
                 opacity: 1;
             }
             50% {
-                opacity: 0.5;
+                opacity: 0.6;
             }
         }
 
-        .note {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9em;
-            margin-top: 20px;
-            font-style: italic;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
 
-        @media (max-width: 600px) {
+        .info {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95em;
+            margin-top: 30px;
+            line-height: 1.6;
+        }
+
+        .info-item {
+            margin: 10px 0;
+        }
+
+        .emoji {
+            font-size: 1.3em;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
             .container {
-                padding: 30px;
+                padding: 40px 25px;
+            }
+
+            h1 {
+                font-size: 2.2em;
+            }
+
+            .subtitle {
+                font-size: 1em;
+            }
+
+            .number {
+                font-size: 2.5em;
+            }
+
+            .countdown-display {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .time-unit {
+                padding: 20px 15px;
+            }
+
+            .label {
+                font-size: 0.95em;
+                letter-spacing: 1px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+                border-radius: 15px;
             }
 
             h1 {
                 font-size: 1.8em;
+                margin-bottom: 8px;
+            }
+
+            .subtitle {
+                font-size: 0.9em;
+                margin-bottom: 25px;
             }
 
             .number {
                 font-size: 2em;
             }
 
+            .label {
+                font-size: 0.85em;
+            }
+
             .countdown-display {
-                grid-template-columns: repeat(2, 1fr);
                 gap: 10px;
+                margin: 25px 0;
+            }
+
+            .status {
+                font-size: 1.3em;
+                margin: 25px 0 15px;
+            }
+
+            .info {
+                font-size: 0.85em;
             }
         }
     </style>
 </head>
 <body>
+    <div class="stars" id="stars"></div>
+
     <div class="container">
         <h1>🎮 RecRoom Shutdown Countdown 🎮</h1>
+        <div class="subtitle">Time Until Closure</div>
         
         <div class="countdown-display">
             <div class="time-unit">
@@ -141,21 +286,65 @@
             </div>
         </div>
 
-        <div class="status" id="status"></div>
+        <div class="status countdown" id="status"></div>
         
-        <div class="note">
-            ⚠️ Update the countdown date in the JavaScript code to match the actual RecRoom shutdown date
+        <div class="info">
+            <div class="info-item">
+                <span class="emoji">⏱️</span>
+                <span id="date-display">Loading...</span>
+            </div>
+            <div class="info-item">
+                <span class="emoji">🌍</span>
+                <span>UTC Timezone</span>
+            </div>
         </div>
     </div>
 
     <script>
-        // UPDATE THIS DATE TO THE ACTUAL RECROOM SHUTDOWN DATE
+        // ==========================================
+        // ⚠️  UPDATE THIS DATE TO THE ACTUAL RECROOM SHUTDOWN DATE
         // Format: new Date('YYYY-MM-DD HH:mm:ss UTC')
+        // Example: new Date('2026-06-22 18:00:00 UTC')
+        // ==========================================
         const shutdownDate = new Date('2026-06-22 00:00:00 UTC').getTime();
+
+        // Create starfield background
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZoneName: 'short'
+            };
+            return date.toLocaleDateString('en-US', options);
+        }
 
         function updateCountdown() {
             const now = new Date().getTime();
             const difference = shutdownDate - now;
+
+            const daysEl = document.getElementById('days');
+            const hoursEl = document.getElementById('hours');
+            const minutesEl = document.getElementById('minutes');
+            const secondsEl = document.getElementById('seconds');
+            const statusEl = document.getElementById('status');
 
             if (difference > 0) {
                 const days = Math.floor(difference / (1000 * 60 * 60 * 24));
@@ -163,25 +352,29 @@
                 const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-                document.getElementById('days').textContent = String(days).padStart(2, '0');
-                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+                daysEl.textContent = String(days).padStart(2, '0');
+                hoursEl.textContent = String(hours).padStart(2, '0');
+                minutesEl.textContent = String(minutes).padStart(2, '0');
+                secondsEl.textContent = String(seconds).padStart(2, '0');
 
-                document.getElementById('status').textContent = '⏱️ Time until shutdown...';
-                document.getElementById('status').classList.remove('ended');
+                statusEl.textContent = '⏱️ Counting down...';
+                statusEl.className = 'status countdown';
             } else {
-                document.getElementById('days').textContent = '00';
-                document.getElementById('hours').textContent = '00';
-                document.getElementById('minutes').textContent = '00';
-                document.getElementById('seconds').textContent = '00';
+                daysEl.textContent = '00';
+                hoursEl.textContent = '00';
+                minutesEl.textContent = '00';
+                secondsEl.textContent = '00';
 
-                document.getElementById('status').textContent = '💀 RecRoom has been shut down!';
-                document.getElementById('status').classList.add('ended');
+                statusEl.textContent = '💀 RecRoom has been shut down!';
+                statusEl.className = 'status ended';
             }
         }
 
-        // Update every second
+        // Display the target date
+        document.getElementById('date-display').textContent = formatDate(shutdownDate);
+
+        // Initialize and update every second
+        createStars();
         updateCountdown();
         setInterval(updateCountdown, 1000);
     </script>
