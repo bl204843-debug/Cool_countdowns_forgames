@@ -1,5 +1,5 @@
 # 🎮 RecRoom Shutdown Countdown
-
+I am trying to make it so you can open it on school computers so stay tooned
 🌐 **[View the Live Website](https://bl204843-debug.github.io/Cool_countdowns_forgames)**
 
 A live countdown timer for the RecRoom game shutdown.
