@@ -163,6 +163,10 @@
             background: linear-gradient(135deg, #ffd60a, #ffc914);
         }
 
+        .more {
+            background: linear-gradient(135deg, #ff6b6b, #ff8787);
+        }
+
         .modal {
             position: absolute;
             top: 0;
@@ -356,6 +360,106 @@
         .home-indicator {
             height: 34px;
             background: #000;
+        }
+
+        /* Camera Styles */
+        #camera-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #000;
+        }
+
+        .camera-controls {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .camera-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            font-size: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .camera-btn:active {
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Photos Grid */
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .photo-item {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #333;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 59, 48, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            display: none;
+        }
+
+        .photo-item:hover .delete-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* More Games List */
+        .game-shutdown {
+            padding: 12px;
+            background: #333;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .game-title {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .game-date {
+            color: #ff6b6b;
+            font-size: 12px;
         }
 
         /* Countdown Styles */
@@ -609,6 +713,11 @@
                         <div class="app-icon-square photos">📸</div>
                         <div class="app-label">Photos</div>
                     </div>
+
+                    <div class="app-icon" onclick="openApp('more')">
+                        <div class="app-icon-square more">➕</div>
+                        <div class="app-label">More Games</div>
+                    </div>
                 </div>
 
                 <!-- Safari -->
@@ -650,8 +759,16 @@
                         <div class="modal-title">Camera</div>
                         <div style="width: 40px;"></div>
                     </div>
-                    <div class="modal-content" style="background: #000; display: flex; align-items: center; justify-content: center;">
-                        <div style="color: #fff; font-size: 64px;">📷</div>
+                    <div class="modal-content" style="position: relative; padding: 0; display: flex; align-items: center; justify-content: center; background: #000;">
+                        <video id="camera-video" style="display: none;"></video>
+                        <div id="camera-placeholder" style="color: #fff; font-size: 64px; text-align: center;">
+                            <div>📷</div>
+                            <p style="font-size: 14px; margin-top: 10px;">Tap to Start Camera</p>
+                        </div>
+                        <div class="camera-controls" style="display: none;" id="camera-controls">
+                            <button class="camera-btn" onclick="capturePhoto()">📸</button>
+                            <button class="camera-btn" onclick="stopCamera()">✕</button>
+                        </div>
                     </div>
                 </div>
 
@@ -750,10 +867,59 @@
                         <div class="modal-title">Photos</div>
                         <div style="width: 40px;"></div>
                     </div>
-                    <div class="modal-content" style="display: flex; align-items: center; justify-content: center; background: #333;">
-                        <div style="text-align: center;">
-                            <div style="font-size: 80px; margin-bottom: 10px;">📸</div>
-                            <p>No Photos Yet</p>
+                    <div class="modal-content" style="overflow-y: auto;">
+                        <div id="photos-grid" class="photos-grid">
+                            <div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #aaa;">
+                                <div style="font-size: 60px; margin-bottom: 10px;">📸</div>
+                                <p>No Photos Yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- More Games -->
+                <div id="more-modal" class="modal">
+                    <div class="modal-header">
+                        <button class="back-btn" onclick="closeApp()">← Back</button>
+                        <div class="modal-title">EA Game Shutdowns 2026</div>
+                        <div style="width: 40px;"></div>
+                    </div>
+                    <div class="modal-content">
+                        <div class="game-shutdown">
+                            <div class="game-title">Anthem</div>
+                            <div class="game-date">January 12, 2026</div>
+                        </div>
+                        <div class="game-shutdown">
+                            <div class="game-title">The Sims Mobile</div>
+                            <div class="game-date">January 24, 2026</div>
+                        </div>
+                        <div class="game-shutdown">
+                            <div class="game-title">NBA Live 19</div>
+                            <div class="game-date">January 30, 2026</div>
+                        </div>
+                        <div class="game-shutdown">
+                            <div class="game-title">Real Racing 3</div>
+                            <div class="game-date">March 19, 2026</div>
+                        </div>
+                        <div class="game-shutdown">
+                            <div class="game-title">Plants vs. Zombies: Garden Warfare (PS3)</div>
+                            <div class="game-date">April 28, 2026</div>
+                        </div>
+                        <div class="game-shutdown">
+                            <div class="game-title">EA Sports FC Tactical</div>
+                            <div class="game-date">May 7, 2026</div>
+                        </div>
+                        <div class="game-shutdown">
+                            <div class="game-title">Madden NFL 23</div>
+                            <div class="game-date">July 13, 2026</div>
+                        </div>
+                        <div class="game-shutdown">
+                            <div class="game-title">Apex Legends (Switch)</div>
+                            <div class="game-date">August 4, 2026</div>
+                        </div>
+                        <div class="game-shutdown">
+                            <div class="game-title">NHL 22 & NHL 23</div>
+                            <div class="game-date">August 31, 2026</div>
                         </div>
                     </div>
                 </div>
@@ -804,6 +970,9 @@
     </div>
 
     <script>
+        let savedPhotos = JSON.parse(localStorage.getItem('savedPhotos')) || [];
+        let currentStream = null;
+
         // Create starfield background
         function createStars() {
             const starsContainer = document.getElementById('stars');
@@ -882,11 +1051,90 @@
         function openApp(appName) {
             document.getElementById('home-screen').style.display = 'none';
             document.getElementById(appName + '-modal').classList.add('active');
+            
+            if (appName === 'camera') {
+                startCamera();
+            } else if (appName === 'photos') {
+                loadPhotos();
+            }
         }
 
         function closeApp() {
+            if (currentStream) {
+                stopCamera();
+            }
             document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
             document.getElementById('home-screen').style.display = 'grid';
+        }
+
+        // Camera functions
+        function startCamera() {
+            const video = document.getElementById('camera-video');
+            const placeholder = document.getElementById('camera-placeholder');
+            const controls = document.getElementById('camera-controls');
+            
+            if (!currentStream) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(stream => {
+                        currentStream = stream;
+                        video.srcObject = stream;
+                        video.style.display = 'block';
+                        placeholder.style.display = 'none';
+                        controls.style.display = 'flex';
+                    })
+                    .catch(err => {
+                        placeholder.innerHTML = '<div>🚫</div><p style="font-size: 14px; margin-top: 10px;">Camera not available</p>';
+                    });
+            }
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('camera-video');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+            const photoData = canvas.toDataURL('image/jpeg');
+            
+            savedPhotos.push(photoData);
+            localStorage.setItem('savedPhotos', JSON.stringify(savedPhotos));
+            loadPhotos();
+        }
+
+        function stopCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
+            document.getElementById('camera-video').style.display = 'none';
+            document.getElementById('camera-placeholder').style.display = 'block';
+            document.getElementById('camera-controls').style.display = 'none';
+        }
+
+        function loadPhotos() {
+            const photosGrid = document.getElementById('photos-grid');
+            if (savedPhotos.length === 0) {
+                photosGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #aaa;"><div style="font-size: 60px; margin-bottom: 10px;">📸</div><p>No Photos Yet</p></div>';
+                return;
+            }
+            
+            photosGrid.innerHTML = '';
+            savedPhotos.forEach((photo, index) => {
+                const photoItem = document.createElement('div');
+                photoItem.className = 'photo-item';
+                photoItem.innerHTML = `
+                    <img src="${photo}" />
+                    <button class="delete-btn" onclick="deletePhoto(${index})">✕</button>
+                `;
+                photosGrid.appendChild(photoItem);
+            });
+        }
+
+        function deletePhoto(index) {
+            savedPhotos.splice(index, 1);
+            localStorage.setItem('savedPhotos', JSON.stringify(savedPhotos));
+            loadPhotos();
         }
 
         // Settings toggle
